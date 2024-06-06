@@ -34,9 +34,11 @@ let rec merge_sort lst =
   | [] -> []
   | [ _ ] -> lst
   | _ :: _ ->
-      let left = take lst (List.length lst / 2) in
-      let right = drop lst (List.length lst / 2) in
+      let mid = List.length lst / 2 in
+      let left = take lst mid in
+      let right = drop lst mid in
       merge (merge_sort left) (merge_sort right)
 
+let _ = assert (merge_sort [] = [])
 let _ = assert (merge_sort [ 2; 1; 3 ] = [ 1; 2; 3 ])
 let _ = assert (merge_sort [ 9; 8; 7; 6; 5; 4 ] = [ 4; 5; 6; 7; 8; 9 ])
