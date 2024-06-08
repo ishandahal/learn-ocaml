@@ -68,3 +68,45 @@ let _ = assert (drop 1 one = Nil)
 let _ = assert (drop 2 two = Nil)
 let _ = assert (drop 30 four = Nil)
 let _ = assert (drop 3 four = Cons ([], Nil))
+
+(** [arithmetic] is user defined type that represents arithmetic operations 
+  on integers. *)
+type arithmetic =
+  | Number of int
+  | Add of (arithmetic * arithmetic)
+  | Sub of (arithmetic * arithmetic)
+  | Mul of (arithmetic * arithmetic)
+  | Div of (arithmetic * arithmetic)
+  | Pow of (arithmetic * arithmetic)
+
+let one = Number 1
+let two = Number 2
+let add1 = Add (one, two)
+let mul1 = Mul (add1, add1)
+let div1 = Div (two, two)
+
+(** [evaluate proposition] is result of evaluating proposition.*)
+let rec evaluate proposition =
+  match proposition with
+  | Number i -> i
+  | Add (i, j) -> evaluate i + evaluate j
+  | Sub (i, j) -> evaluate i - evaluate j
+  | Mul (i, j) -> evaluate i * evaluate j
+  | Div (i, j) -> evaluate i / evaluate j
+  | Pow (i, j) ->
+      let rec pow base exp =
+        match evaluate exp with
+        | 0 -> Number 1
+        | n -> Mul (base, pow base (Sub (Number n, Number 1)))
+      in
+      evaluate (pow i j)
+
+let _ = assert (evaluate (Add (one, one)) = evaluate two)
+let _ = assert (evaluate (Pow (two, two)) = 2 * 2)
+let _ = assert (evaluate mul1 = 9)
+
+(** [evaluate_op e] is Some int after evaluating e. None is [ Division_by_zero ] error.*)
+let evaluate_op e = try Some (evaluate e) with Division_by_zero -> None
+
+let _ = assert (evaluate_op (Div (div1, Number 0)) = None)
+let _ = assert (evaluate_op (Div (add1, Number 3)) = Some 1)
