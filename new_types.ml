@@ -110,3 +110,47 @@ let evaluate_op e = try Some (evaluate e) with Division_by_zero -> None
 
 let _ = assert (evaluate_op (Div (div1, Number 0)) = None)
 let _ = assert (evaluate_op (Div (add1, Number 3)) = Some 1)
+
+(* ============================================ *)
+
+(**[tr] is tree data structure *)
+type 'a tr = LF | Br of 'a * 'a tr * 'a tr
+
+let t1 = Br (1, LF, LF)
+let t2 = Br (3, Br (2, LF, LF), t1)
+let t5 = Br (5, t2, t2)
+
+(** [tr_length tr] is count of nodes in tree.*)
+let rec tr_length = function
+  | LF -> 0
+  | Br (_, l, r) -> 1 + tr_length l + tr_length r
+
+let () = assert (tr_length t2 = 3)
+let () = assert (tr_length t1 = 1)
+
+(**[max i j] is highest value between i and j.*)
+let max i j = if i > j then i else j
+
+(**[max_depth tr] is length of deepest branch from root of tree.*)
+let rec max_depth = function
+  | LF -> 0
+  | Br (_, l, r) -> 1 + max (max_depth l) (max_depth r)
+
+let _ = assert (max_depth t1 = 1)
+let _ = assert (max_depth t2 = 2)
+let _ = assert (max_depth t5 = 3)
+
+(** [print_tree tr] prints values of each node. Requires tree of ints.*)
+let rec print_tree = function
+  | LF ->
+      print_string " lf ";
+      ""
+  | Br (v, l, r) ->
+      print_string " ";
+      print_string (string_of_int v);
+      print_string " ";
+      print_tree l ^ print_tree r
+
+let _ = print_tree t2
+let _ = print_endline " "
+let _ = print_tree t5
