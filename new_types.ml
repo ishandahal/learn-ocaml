@@ -192,3 +192,11 @@ let rec same_shape t1 t2 =
 let t6 = Br (3, Br (3, LF, LF), t1)
 let _ = assert (same_shape t2 t6)
 let _ = assert (not (same_shape t1 t6))
+
+(** [insert k tr] is BST with k inserted in the right place.*)
+let rec insert k = function
+  | LF -> Br (k, LF, LF)
+  | Br (k', l, r) ->
+      if k = k' then Br (k', l, r)
+      else if k < k' then Br (k', insert k l, r)
+      else Br (k', l, insert k r)
