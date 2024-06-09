@@ -193,10 +193,16 @@ let t6 = Br (3, Br (3, LF, LF), t1)
 let _ = assert (same_shape t2 t6)
 let _ = assert (not (same_shape t1 t6))
 
-(** [insert k tr] is BST with k inserted in the right place.*)
+(** [insert k tr] is BST with k inserted in the right place. 
+    Does not insert repeat elements.*)
 let rec insert k = function
   | LF -> Br (k, LF, LF)
   | Br (k', l, r) ->
       if k = k' then Br (k', l, r)
       else if k < k' then Br (k', insert k l, r)
       else Br (k', l, insert k r)
+
+(** [tree_of_list t l] is BST with elements of l.*)
+let rec tree_of_list tree = function
+  | [] -> tree
+  | h :: t -> tree_of_list (insert h tree) t
