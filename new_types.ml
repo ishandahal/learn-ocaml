@@ -154,3 +154,41 @@ let rec print_tree = function
 let _ = print_tree t2
 let _ = print_endline " "
 let _ = print_tree t5
+let _ = print_endline " "
+
+(** [map_tr f tr] tree with f applied to every element of tr.*)
+let rec map_tr f = function
+  | LF -> LF
+  | Br (e, l, r) -> Br (f e, map_tr f l, map_tr f r)
+
+let _ = print_tree (map_tr (fun x -> x * x) t5)
+
+(** [member elem tr] is true if elem is in tr; false otherwise.*)
+let rec member elem = function
+  | LF -> false
+  | Br (e, l, r) -> if e = elem then true else member elem l || member elem r
+
+let () = assert (member 2 t2)
+let () = assert (member 5 t5)
+let () = assert (not (member 5 t2))
+let () = assert (not (member 15 t5))
+
+(** [flip tr] is tree flipped such that it is mirror image to tr.*)
+let rec flip = function LF -> LF | Br (e, l, r) -> Br (e, flip r, flip l)
+
+let t3 = Br (10, t2, LF)
+let _ = print_endline " "
+let _ = print_tree t3
+let _ = print_endline " "
+let _ = print_tree (flip t3)
+
+(** [same_shape t1 t2] is true if t1 and t2 are of same shape; false otherwise.*)
+let rec same_shape t1 t2 =
+  match (t1, t2) with
+  | LF, LF -> true
+  | Br (_, l1, r1), Br (_, l2, r2) -> same_shape l1 l2 && same_shape r1 r2
+  | _, _ -> false
+
+let t6 = Br (3, Br (3, LF, LF), t1)
+let _ = assert (same_shape t2 t6)
+let _ = assert (not (same_shape t1 t6))
