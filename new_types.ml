@@ -1,3 +1,5 @@
+open StdLabels
+
 (** [rect] is rectangle with height and width.*)
 type rect = Square of int | Rectangle of int * int
 
@@ -206,3 +208,29 @@ let rec insert k = function
 let rec tree_of_list tree = function
   | [] -> tree
   | h :: t -> tree_of_list (insert h tree) t
+
+(** [list_of_tree t] is list of all elements in tree.*)
+let rec list_of_tree = function
+  | LF -> []
+  | Br (e, l, r) -> list_of_tree l @ [ e ] @ list_of_tree r
+
+(** [combine_tree t1 t2] is result of merging t1 and t2. In case of duplicate elements
+      value in t1 is given precedence.*)
+let combine_tree t1 t2 = tree_of_list LF (list_of_tree t1 @ list_of_tree t2)
+
+(*=======================================*)
+
+(** [mtree] is tree with 0 to n branches with a data value of any type*)
+type 'a mtree = Br of 'a * 'a mtree list
+
+(** [sum l] is elements in l*)
+let rec sum = function [] -> 0 | h :: t -> h + sum t
+
+(** [size tr] count of number of nodes in tr.*)
+let rec size = function Br (_, l) -> 1 + sum (List.map ~f:size l)
+
+(** [total tr] sum of elements in tree.*)
+let rec total = function Br (e, l) -> e + sum (List.map ~f:total l)
+
+(** [map_mtr f tr] is function f mapped to all elements of tr.*)
+let rec map_mtr f = function Br (e, l) -> Br (f e, List.map ~f:(map_mtr f) l)
